@@ -1,0 +1,35 @@
+server:
+  port: 881
+spring:
+  application:
+    name: xxl-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Vary Access-Control-Allow-Credentials Access-Control-Allow-Origin, RETAIN_UNIQUE
+        - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST
+      routes:
+        - id: 1
+          uri: lb://xxl-auth
+          predicates:
+            - Path=/auth/**
+        - id: 2
+          uri: lb://xxl-robot
+          predicates:
+            - Path=/robot/**
+        - id: 3
+          uri: lb://xxl-message
+          predicates:
+            - Path=/message/**
+
+
+
+# Eureka Server 配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:880/eureka
+# 配置Gateway日志等级，输出转发细节信息
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
